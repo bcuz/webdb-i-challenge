@@ -17,23 +17,8 @@ server.get('/accounts', async (req, res) => {
   }
 });
 
-server.get('/accounts/:id', async (req, res) => {
-  // might refactor later
-  try {
-    const account = await Accounts.findById(req.params.id);      
-
-    if (account) {
-      res.status(200).json(account);
-    } else {
-      res.status(404).json({ message: 'account not found' });
-    }
-  } catch (error) {
-    // log error to server
-    console.log(error);
-    res.status(500).json({
-      message: 'Error retrieving the account',
-    });
-  }  
+server.get('/accounts/:id', validateAccountId, async (req, res) => {
+  res.json(req.account);  
 });
 
 server.post('/accounts', async (req, res) => {
@@ -100,5 +85,21 @@ server.put('/accounts/:id', async (req, res) => {
   }
 
 });
+
+async function validateAccountId(req, res, next) {
+
+  try {
+  const account = await Accounts.findById(req.params.id);
+
+  if (account) {
+    req.account = account
+    next()
+  } else {
+    res.status(404).json({ message: 'account not found; invalid id' });
+  }    
+  } catch (err) {
+    res.status(500).json({ message: 'failed to process request' });    
+  }
+};
 
 module.exports = server;
