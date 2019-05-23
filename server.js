@@ -4,6 +4,18 @@ const Accounts = require('./data/accounts-model.js');
 const server = express();
 server.use(express.json());
 
+server.get('/accounts', async (req, res) => {
+  try {
+    const accounts = await Accounts.find();
+    res.status(200).json(accounts);
+  } catch (error) {
+    // log error to server
+    console.log(error);
+    res.status(500).json({
+      message: 'Error retrieving the accounts',
+    });
+  }
+});
 
 server.get('/accounts/:id', async (req, res) => {
   // might refactor later
