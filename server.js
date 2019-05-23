@@ -76,4 +76,29 @@ server.delete('/accounts/:id', async (req, res) => {
   }
 });
 
+server.put('/accounts/:id', async (req, res) => {
+  // might refactor later.
+  
+  if(Object.keys(req.body).length === 0){
+    res.status(400).json({message: "missing data"});
+  }
+
+  try {
+    const account = await Accounts.update(req.params.id, req.body);  
+
+    if (account) {
+      res.status(200).json(account);
+    } else {
+      res.status(404).json({ message: 'The account could not be found' });
+    }
+  } catch (error) {
+    // log error to server
+    console.log(error);
+    res.status(500).json({
+      message: 'Error updating the account',
+    });
+  }
+
+});
+
 module.exports = server;
