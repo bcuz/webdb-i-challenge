@@ -57,4 +57,23 @@ server.post('/accounts', async (req, res) => {
   
 });
 
+server.delete('/accounts/:id', async (req, res) => {
+  // might refactor later.
+  try {
+    let removed = await Accounts.remove(req.params.id);        
+    
+    if (removed) {
+      res.status(200).json({ message: 'The account has been nuked' });
+    } else {
+      res.status(404).json({ message: 'The account could not be found' });
+    }
+  } catch (error) {
+    // log error to server
+    console.log(error);
+    res.status(500).json({
+      message: 'Error removing the account',
+    });
+  }
+});
+
 module.exports = server;
