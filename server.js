@@ -22,7 +22,7 @@ server.get('/accounts/:id', validateAccountId, async (req, res) => {
 });
 
 server.post('/accounts', async (req, res) => {
-  // no specific error for non-unique name
+  //  non-unique name will be a 500 error
   let { name, budget } = req.body;
 
   if (!name || !budget) {    
@@ -42,16 +42,12 @@ server.post('/accounts', async (req, res) => {
   
 });
 
-server.delete('/accounts/:id', async (req, res) => {
-  // might refactor later.
+server.delete('/accounts/:id', validateAccountId, async (req, res) => {
+
   try {
-    let removed = await Accounts.remove(req.params.id);        
+    await Accounts.remove(req.params.id);        
+    res.status(200).json({ message: 'The account has been nuked' });
     
-    if (removed) {
-      res.status(200).json({ message: 'The account has been nuked' });
-    } else {
-      res.status(404).json({ message: 'The account could not be found' });
-    }
   } catch (error) {
     // log error to server
     console.log(error);
@@ -61,7 +57,7 @@ server.delete('/accounts/:id', async (req, res) => {
   }
 });
 
-server.put('/accounts/:id', async (req, res) => {
+server.put('/accounts/:id', validateAccountId, async (req, res) => {
   // might refactor later.
   
   if(Object.keys(req.body).length === 0){
@@ -71,11 +67,8 @@ server.put('/accounts/:id', async (req, res) => {
   try {
     const account = await Accounts.update(req.params.id, req.body);  
 
-    if (account) {
-      res.status(200).json(account);
-    } else {
-      res.status(404).json({ message: 'The account could not be found' });
-    }
+    res.status(200).json(account);    
+    
   } catch (error) {
     // log error to server
     console.log(error);
