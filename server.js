@@ -6,7 +6,7 @@ server.use(express.json());
 
 server.get('/accounts', async (req, res) => {
   try {
-    const accounts = await Accounts.find();
+    const accounts = await Accounts.find(req.query);
     res.status(200).json(accounts);
   } catch (error) {
     // log error to server
